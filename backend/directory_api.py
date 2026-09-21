@@ -152,14 +152,14 @@ def seed(conn: sqlite3.Connection) -> None:
 
     now = utc_now()
     users = [
-        ("Alyssa","Reyes","areyes","Finance","Finance Analyst",2,2,"Carla Mendoza","Active",1,"",0,[1,2,7]),
-        ("Nina","Cruz","ncruz","Human Resources","HR Specialist",3,3,"Andrea Lim","Active",1,"",0,[1,3,7]),
+        ("Adrian","Reyes","areyes","Finance","Finance Analyst",2,2,"Carlos Mendoza","Active",1,"",0,[1,2,7]),
+        ("Nico","Cruz","ncruz","Human Resources","HR Specialist",3,3,"Andres Lim","Active",1,"",0,[1,3,7]),
         ("Jim","Camus","jcamus","IT","IT Support Specialist",4,4,"Daniel Reyes","Active",1,"",0,[1,4,7,8]),
         ("Marco","Santos","msantos","Operations","Operations Coordinator",5,6,"Victor Tan","Active",1,"",0,[1,6,7]),
         ("Daniel","Lee","dlee","IT","Systems Administrator",4,5,"Infrastructure Manager","Active",1,"",0,[1,4,5,7,8]),
-        ("Mika","Torres","mtorres","Marketing","Marketing Associate",1,1,"Marketing Lead","Disabled",0,"",0,[1,7]),
-        ("Paolo","Garcia","pgarcia","Finance","Finance Contractor",2,2,"Carla Mendoza","Active",1,"",1,[1,2,7]),
-        ("Lea","Ramos","lramos","Operations","Operations Associate",7,6,"Victor Tan","Offboarded",0,"",0,[]),
+        ("Miguel","Torres","mtorres","Marketing","Marketing Associate",1,1,"Marketing Lead","Disabled",0,"",0,[1,7]),
+        ("Paolo","Garcia","pgarcia","Finance","Finance Contractor",2,2,"Carlos Mendoza","Active",1,"",1,[1,2,7]),
+        ("Leo","Ramos","lramos","Operations","Operations Associate",7,6,"Victor Tan","Offboarded",0,"",0,[]),
     ]
     for first,last,username,department,title,ou_id,template_id,manager,status,enabled,expiry,must_reset,group_ids in users:
         cur = conn.execute(
