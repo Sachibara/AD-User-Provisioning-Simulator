@@ -18,13 +18,13 @@
   function initials(a,b){return ((a?.[0]||"")+(b?.[0]||"")).toUpperCase()||"ID"}
   function fmtTime(iso){if(!iso)return "—";const d=new Date(iso),diff=Math.max(0,Date.now()-d.getTime());if(diff<60000)return "just now";if(diff<3600000)return Math.round(diff/60000)+"m ago";if(diff<86400000)return Math.round(diff/3600000)+"h ago";return Math.round(diff/86400000)+"d ago"}
   function toast(title,msg="",type="info"){const n=document.createElement("div");n.className="toast "+type;n.innerHTML="<strong>"+esc(title)+"</strong><span>"+esc(msg)+"</span>";$("toastRegion").appendChild(n);setTimeout(()=>n.remove(),4200)}
-  function cloneDemo(){const saved=sessionStorage.getItem("ad_sim_state");if(saved){try{return JSON.parse(saved)}catch{}}return JSON.parse(JSON.stringify(window.AD_SIM_DEMO))}
-  function persistDemo(){if(state.mode==="demo")sessionStorage.setItem("ad_sim_state",JSON.stringify(state.data))}
+  function cloneDemo(){const saved=localStorage.getItem("ad_sim_state");if(saved){try{return JSON.parse(saved)}catch{}}return JSON.parse(JSON.stringify(window.AD_SIM_DEMO))}
+  function persistDemo(){if(state.mode==="demo")localStorage.setItem("ad_sim_state",JSON.stringify(state.data))}
   async function fetchJson(path,options={}){const c=new AbortController(),t=setTimeout(()=>c.abort(),options.timeout||10000);try{const r=await fetch(state.backendUrl.replace(/\/$/,"")+path,{...options,signal:c.signal,headers:{"Content-Type":"application/json",...(options.headers||{})}});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.detail||d.error||"Request failed ("+r.status+")");return d}finally{clearTimeout(t)}}
   function setMode(kind,title,detail){$("modeDot").className="mode-dot"+(kind?" "+kind:"");$("modeTitle").textContent=title;$("modeDetail").textContent=detail}
 
   async function loadData(showToast=false){
-    if(state.mode==="demo"){state.data=cloneDemo();state.lastRefresh=new Date();setMode("","Demo directory","Safe simulated identity data");renderAll();if(showToast)toast("Directory refreshed","Demo identity data reloaded.");return}
+    if(state.mode==="demo"){state.data=cloneDemo();state.lastRefresh=new Date();setMode("","Browser workspace","Saved locally in this browser");renderAll();if(showToast)toast("Directory refreshed","Browser-saved identity data loaded.");return}
     setMode("","Connecting…",state.backendUrl);
     try{state.data=await fetchJson("/api/bootstrap");state.lastRefresh=new Date();setMode("live","Live simulator",state.backendUrl.replace(/^https?:\/\//,""));renderAll();if(showToast)toast("Directory refreshed","Persistent simulator records loaded.")}
     catch(e){setMode("error","Backend unavailable",state.backendUrl.replace(/^https?:\/\//,""));toast("Could not reach simulator",e.message,"error");if(!state.data){state.data=cloneDemo();renderAll()}}
