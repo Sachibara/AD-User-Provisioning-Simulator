@@ -2,6 +2,11 @@
 
 A portfolio-grade identity administration and user-lifecycle simulator for IT Help Desk, Systems Administration, IT Operations, and Infrastructure roles.
 
+
+## Public App
+
+**Live app:** https://sachibara.github.io/AD-User-Provisioning-Simulator/
+
 ## Modes
 - **Browser Workspace Mode** — persistent browser directory with realistic users, OUs, groups, role templates, lifecycle actions, and audit history.
 - **Live Simulator Mode** — local FastAPI + SQLite backend that persists the simulated directory.
