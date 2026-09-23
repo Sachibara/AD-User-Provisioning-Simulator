@@ -3,115 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#f4f6fa">
-  <meta name="description" content="AD User Provisioning Simulator - user lifecycle, OUs, groups, role templates, permissions, and audit history.">
-  <title>AD User Provisioning Simulator</title>
-  <link rel="stylesheet" href="./styles.css">
-  <script src="./demo-data.js" defer></script>
-  <script src="./app.js" defer></script>
+  <meta http-equiv="refresh" content="0;url=https://sachibara.github.io/HelpDesk-Pro/">
+  <link rel="canonical" href="https://sachibara.github.io/HelpDesk-Pro/">
+  <title>AD-User-Provisioning-Simulator → OpsFusion</title>
+  <style>
+    body{font-family:Segoe UI,Arial,sans-serif;margin:0;min-height:100vh;display:grid;place-items:center;background:#0b1220;color:#eef4ff}
+    main{max-width:680px;padding:36px;border:1px solid #2c3850;border-radius:16px;background:#111b2e;box-shadow:0 22px 60px rgba(0,0,0,.28)}
+    h1{margin:0 0 12px;font-size:28px}p{line-height:1.65;color:#b9c7dc}.btn{display:inline-block;margin-top:14px;padding:11px 16px;border-radius:8px;background:#2f7df6;color:#fff;text-decoration:none;font-weight:700}
+  </style>
 </head>
 <body>
-<div class="shell">
-  <aside class="sidebar" id="sidebar">
-    <div class="brand"><div class="brand-mark">ID</div><div><strong>Identity Desk</strong><small>Directory Administration</small></div></div>
-    <div class="mode-card"><span class="mode-dot" id="modeDot"></span><div><strong id="modeTitle">Browser workspace</strong><small id="modeDetail">Saved locally in this browser</small></div><button class="link-btn" id="connectionButton">Configure</button></div>
-    <div class="side-label">Directory</div>
-    <nav>
-      <button class="nav active" data-page="dashboard"><span>⌂</span>Overview</button>
-      <button class="nav" data-page="users"><span>◎</span>Users <b id="userCountBadge">0</b></button>
-      <button class="nav" data-page="ous"><span>⌗</span>Organizational Units</button>
-      <button class="nav" data-page="groups"><span>◉</span>Groups</button>
-      <button class="nav" data-page="workflows"><span>⇄</span>Lifecycle</button>
-      <button class="nav" data-page="templates"><span>▤</span>Role Templates</button>
-      <button class="nav" data-page="audit"><span>≡</span>Audit Log</button>
-      <button class="nav" data-page="about"><span>ⓘ</span>About</button>
-    </nav>
-    <div class="tree-box"><div class="side-label">Domain tree</div><div class="tree-root">▾ <strong>corp.local</strong></div><div id="sidebarOuTree"></div></div>
-    <div class="sidebar-foot"><span>Simulator only</span><strong>No real AD changes</strong><small>FastAPI + SQLite</small></div>
-  </aside>
-
-  <section class="workspace">
-    <header class="topbar">
-      <div class="top-left"><button class="menu-btn" id="menuButton">☰</button><div><p id="pageEyebrow">Directory overview</p><h1 id="pageTitle">Identity Operations</h1></div></div>
-      <div class="top-actions"><div class="sync"><span>Last refresh</span><strong id="lastRefresh">—</strong></div><button class="btn secondary" id="refreshButton">Refresh</button><button class="btn primary" id="newUserTopButton">New user</button></div>
-    </header>
-
-    <main>
-      <section class="page active" data-page-panel="dashboard">
-        <div class="hero">
-          <div><p class="eyebrow">Identity lifecycle</p><h2>Provision the right access, then remove it cleanly.</h2><p>Simulate help-desk and systems-administration tasks including onboarding, group assignment, account controls, password resets, offboarding, and audit review.</p><div class="hero-actions"><button class="btn primary" data-go="users">Open directory</button><button class="btn secondary" data-go="workflows">Lifecycle center</button></div></div>
-          <div class="preview-card"><div class="preview-avatar" id="heroInitials">AR</div><span>Provisioning preview</span><strong id="heroUser">areyes@corp.local</strong><small id="heroRole">Finance Analyst · Active</small><div class="preview-steps"><div><i></i>Account <b>Ready</b></div><div><i></i>OU placement <b>Ready</b></div><div><i></i>Groups <b>Ready</b></div></div></div>
-        </div>
-        <div class="metrics">
-          <article><span>Total users</span><strong id="statUsers">0</strong><small>Directory identities</small></article>
-          <article><span>Active</span><strong id="statActive">0</strong><small>Enabled accounts</small></article>
-          <article><span>Disabled</span><strong id="statDisabled">0</strong><small>Restricted accounts</small></article>
-          <article><span>Expiring soon</span><strong id="statExpiring">0</strong><small>Within 30 days</small></article>
-          <article><span>Groups</span><strong id="statGroups">0</strong><small>Access groups</small></article>
-        </div>
-        <div class="grid-2">
-          <article class="panel"><div class="panel-head"><div><p class="eyebrow">Lifecycle board</p><h3>Account status</h3></div></div><div id="lifecycleBoard" class="lifecycle-board"></div></article>
-          <article class="panel"><div class="panel-head"><div><p class="eyebrow">Provisioning queue</p><h3>Recent actions</h3></div><button class="link-btn" data-go="audit">View audit</button></div><div id="recentActions" class="activity-list"></div></article>
-        </div>
-        <div class="grid-2">
-          <article class="panel"><div class="panel-head"><div><p class="eyebrow">Organization</p><h3>Users by department</h3></div></div><div id="departmentBars" class="bar-list"></div></article>
-          <article class="panel"><div class="panel-head"><div><p class="eyebrow">Access posture</p><h3>High-impact memberships</h3></div><button class="link-btn" data-go="groups">Review groups</button></div><div id="riskList" class="risk-list"></div></article>
-        </div>
-      </section>
-
-      <section class="page" data-page-panel="users">
-        <div class="section-head"><div><p class="eyebrow">Directory identities</p><h2>Users</h2><p>Create, search, provision, disable, reset, and offboard simulated directory accounts.</p></div><div class="section-actions"><button class="btn secondary" id="bulkProvisionButton">Bulk provision</button><button class="btn primary" id="addUserButton">Create user</button></div></div>
-        <article class="panel">
-          <div class="toolbar"><div class="search"><span>⌕</span><input id="userSearch" placeholder="Search name, username, UPN, department, title, OU"></div><select id="userStatusFilter"><option value="all">All statuses</option><option>Active</option><option>Disabled</option><option>Pending</option><option>Offboarded</option></select><select id="userDepartmentFilter"><option value="all">All departments</option></select><button class="btn secondary" id="exportUsersButton">Export CSV</button></div>
-          <div class="table-wrap"><table><thead><tr><th>User</th><th>Username / UPN</th><th>Department</th><th>Title</th><th>OU</th><th>Status</th><th>Groups</th><th>Expiry</th></tr></thead><tbody id="userTableBody"></tbody></table></div>
-        </article>
-      </section>
-
-      <section class="page" data-page-panel="ous">
-        <div class="section-head"><div><p class="eyebrow">Directory structure</p><h2>Organizational Units</h2><p>Document the logical hierarchy used for users, departments, service accounts, and disabled identities.</p></div><button class="btn primary" id="addOuButton">Add OU</button></div>
-        <div class="ou-layout"><article class="panel"><div class="panel-head"><div><p class="eyebrow">Tree</p><h3>corp.local</h3></div></div><div id="ouTree" class="ou-tree"></div></article><article class="panel"><div class="panel-head"><div><p class="eyebrow">OU detail</p><h3 id="ouDetailTitle">Select an OU</h3></div></div><div id="ouDetailPanel" class="empty">Choose an OU to inspect its users and path.</div></article></div>
-      </section>
-
-      <section class="page" data-page-panel="groups">
-        <div class="section-head"><div><p class="eyebrow">Access assignment</p><h2>Groups</h2><p>Review security/distribution groups, ownership, risk, membership, and permissions.</p></div><button class="btn primary" id="addGroupButton">Add group</button></div><div id="groupGrid" class="group-grid"></div>
-      </section>
-
-      <section class="page" data-page-panel="workflows">
-        <div class="section-head"><div><p class="eyebrow">User lifecycle</p><h2>Provisioning Workflows</h2><p>Simulate repeatable onboarding and offboarding with complete audit history.</p></div></div>
-        <div class="workflow-grid"><article class="workflow-card onboarding"><p class="eyebrow">Onboarding</p><h3>New employee provisioning</h3><ol><li>Generate username and UPN</li><li>Create account in selected OU</li><li>Assign role-template groups</li><li>Set expiry if needed</li><li>Flag temporary password reset</li><li>Record provisioning audit</li></ol><button class="btn primary" id="startOnboardingButton">Start onboarding</button></article><article class="workflow-card offboarding"><p class="eyebrow">Offboarding</p><h3>Secure account removal</h3><ol><li>Disable account</li><li>Remove standard memberships</li><li>Move to Disabled Users OU</li><li>Mark lifecycle offboarded</li><li>Preserve ownership history</li><li>Record audit event</li></ol><button class="btn danger" id="startOffboardingButton">Choose user to offboard</button></article></div>
-        <article class="panel"><div class="panel-head"><div><p class="eyebrow">Lifecycle timeline</p><h3>Recent workflow activity</h3></div></div><div id="workflowTimeline" class="timeline"></div></article>
-      </section>
-
-      <section class="page" data-page-panel="templates">
-        <div class="section-head"><div><p class="eyebrow">Role-based provisioning</p><h2>Role Templates</h2><p>Map common job roles to default OUs, groups, departments, and baseline permissions.</p></div></div><div id="templateGrid" class="template-grid"></div>
-      </section>
-
-      <section class="page" data-page-panel="audit">
-        <div class="section-head"><div><p class="eyebrow">Traceability</p><h2>Audit Log</h2><p>Review account creation, lifecycle events, group changes, resets, account controls, and bulk operations.</p></div></div><article class="panel"><div id="auditList" class="activity-list audit-list"></div></article>
-      </section>
-
-      <section class="page" data-page-panel="about">
-        <div class="section-head"><div><p class="eyebrow">Project architecture</p><h2>About Identity Desk</h2><p>A safe directory-administration simulator demonstrating common help-desk, systems-administration, and identity-lifecycle workflows.</p></div></div>
-        <div class="about-grid"><article class="panel about-wide"><p class="eyebrow">Architecture</p><div class="architecture"><div><strong>Enterprise UI</strong><span>Directory lifecycle console</span></div><b>→</b><div><strong>FastAPI</strong><span>Provisioning REST services</span></div><b>→</b><div><strong>Lifecycle Engine</strong><span>OU, group & policy simulation</span></div><b>→</b><div><strong>SQLite</strong><span>Persistent directory records</span></div></div></article><article class="panel"><p class="eyebrow">IT administration</p><div class="tag-cloud"><span>AD Concepts</span><span>User Provisioning</span><span>OUs</span><span>Security Groups</span><span>Password Reset</span><span>Offboarding</span></div></article><article class="panel"><p class="eyebrow">Development</p><div class="tag-cloud"><span>Python</span><span>FastAPI</span><span>SQLite</span><span>REST API</span><span>JavaScript</span><span>CSV</span></div></article></div>
-      </section>
-    </main>
-  </section>
-</div>
-
-<dialog id="userDialog"><form method="dialog" class="dialog-card" id="userForm"><div class="dialog-head"><div><p class="eyebrow">Directory identity</p><h2 id="userDialogTitle">User details</h2></div><button class="icon-btn" value="cancel">×</button></div><div class="user-summary"><div class="avatar" id="detailAvatar">AR</div><div><strong id="detailDisplayName">User Name</strong><span id="detailUpn">user@corp.local</span><small id="detailStatus">Active</small></div><div class="summary-actions"><button type="button" class="btn secondary" id="passwordResetButton">Reset password</button><button type="button" class="btn secondary" id="toggleAccountButton">Disable</button><button type="button" class="btn danger" id="offboardUserButton">Offboard</button></div></div><div class="form-grid"><label><span>First name</span><input id="editFirstName"></label><label><span>Last name</span><input id="editLastName"></label><label><span>Username</span><input id="editUsername"></label><label><span>UPN</span><input id="editUpn"></label><label><span>Department</span><input id="editDepartment"></label><label><span>Job title</span><input id="editTitle"></label><label><span>Organizational Unit</span><select id="editOu"></select></label><label><span>Role template</span><select id="editTemplate"></select></label><label><span>Manager</span><input id="editManager"></label><label><span>Account expiry</span><input type="date" id="editExpiry"></label></div><div class="detail-grid"><div><h4>Group memberships</h4><div id="groupMemberships" class="check-list"></div></div><div><h4>Permission summary</h4><div id="permissionSummary" class="permission-list"></div></div></div><div class="dialog-actions"><button class="btn secondary" value="cancel">Close</button><button type="button" class="btn primary" id="saveUserButton">Save changes</button></div></form></dialog>
-
-<dialog id="newUserDialog"><form method="dialog" class="dialog-card small-dialog" id="newUserForm"><div class="dialog-head"><div><p class="eyebrow">Provision identity</p><h2>Create user</h2></div><button class="icon-btn" value="cancel">×</button></div><div class="form-grid"><label><span>First name</span><input id="newFirstName" required></label><label><span>Last name</span><input id="newLastName" required></label><label><span>Department</span><input id="newDepartment" required></label><label><span>Job title</span><input id="newTitle" required></label><label><span>OU</span><select id="newOu" required></select></label><label><span>Role template</span><select id="newTemplate"></select></label><label><span>Manager</span><input id="newManager"></label><label><span>Account expiry</span><input type="date" id="newExpiry"></label></div><div id="generatedPreview" class="generated-preview">Username and UPN will be generated automatically.</div><div class="dialog-actions"><button class="btn secondary" value="cancel">Cancel</button><button class="btn primary" type="submit">Provision user</button></div></form></dialog>
-
-<dialog id="bulkDialog"><form method="dialog" class="dialog-card small-dialog" id="bulkForm"><div class="dialog-head"><div><p class="eyebrow">Bulk provisioning</p><h2>Provision multiple users</h2></div><button class="icon-btn" value="cancel">×</button></div><p class="helper">Paste CSV rows: <code>FirstName,LastName,Department,Title,OU,Template</code></p><textarea id="bulkCsv" rows="10" placeholder="Mario,Santos,Finance,Finance Analyst,Finance,Finance User&#10;Paolo,Cruz,IT,IT Support Specialist,IT,IT Support"></textarea><div class="dialog-actions"><button class="btn secondary" value="cancel">Cancel</button><button class="btn primary" type="submit">Provision rows</button></div></form></dialog>
-
-<dialog id="ouDialog"><form method="dialog" class="dialog-card small-dialog" id="ouForm"><div class="dialog-head"><div><p class="eyebrow">Directory structure</p><h2>Add OU</h2></div><button class="icon-btn" value="cancel">×</button></div><div class="form-grid single"><label><span>OU name</span><input id="newOuName" required></label><label><span>Parent OU</span><select id="newOuParent"></select></label><label><span>Description</span><input id="newOuDescription"></label></div><div class="dialog-actions"><button class="btn secondary" value="cancel">Cancel</button><button class="btn primary" type="submit">Create OU</button></div></form></dialog>
-
-<dialog id="groupDialog"><form method="dialog" class="dialog-card small-dialog" id="groupForm"><div class="dialog-head"><div><p class="eyebrow">Access group</p><h2>Add group</h2></div><button class="icon-btn" value="cancel">×</button></div><div class="form-grid single"><label><span>Group name</span><input id="newGroupName" required></label><label><span>Type</span><select id="newGroupType"><option>Security</option><option>Distribution</option></select></label><label><span>Owner</span><input id="newGroupOwner"></label><label><span>Risk</span><select id="newGroupRisk"><option>Low</option><option>Medium</option><option>High</option></select></label><label><span>Permission / purpose</span><input id="newGroupPermission"></label></div><div class="dialog-actions"><button class="btn secondary" value="cancel">Cancel</button><button class="btn primary" type="submit">Create group</button></div></form></dialog>
-
-<dialog id="offboardDialog"><form method="dialog" class="dialog-card small-dialog"><div class="dialog-head"><div><p class="eyebrow">Secure offboarding</p><h2>Offboard user</h2></div><button class="icon-btn" value="cancel">×</button></div><label class="field"><span>User</span><select id="offboardSelect"></select></label><label class="check-card"><input type="checkbox" id="offboardRemoveGroups" checked><span><strong>Remove standard group memberships</strong><small>Audit history is retained.</small></span></label><label class="check-card"><input type="checkbox" id="offboardMoveOu" checked><span><strong>Move to Disabled Users OU</strong><small>Simulates cleanup after departure.</small></span></label><div class="dialog-actions"><button class="btn secondary" value="cancel">Cancel</button><button class="btn danger" type="button" id="confirmOffboardButton">Confirm offboarding</button></div></form></dialog>
-
-<dialog id="connectionDialog"><form method="dialog" class="dialog-card small-dialog"><div class="dialog-head"><div><p class="eyebrow">Data source</p><h2>Connection Settings</h2></div><button class="icon-btn" value="cancel">×</button></div><label class="radio-card"><input type="radio" name="mode" value="demo" checked><span><strong>Browser workspace</strong><small>Use the directory simulator directly; changes persist in this browser.</small></span></label><label class="radio-card"><input type="radio" name="mode" value="live"><span><strong>Live backend</strong><small>Connect to the local persistent simulator.</small></span></label><label class="field"><span>Backend URL</span><input id="backendUrlInput" value="http://127.0.0.1:8830"></label><div class="dialog-actions"><button class="btn secondary" value="cancel">Cancel</button><button class="btn primary" type="button" id="saveConnectionButton">Save</button></div></form></dialog>
-
-<div class="toast-region" id="toastRegion"></div>
+  <main>
+    <h1>AD-User-Provisioning-Simulator is now part of OpsFusion</h1>
+    <p>This standalone module has been consolidated into the unified flagship platform to reduce duplicate projects and demonstrate integrated, cross-module workflows.</p>
+    <a class="btn" href="https://sachibara.github.io/HelpDesk-Pro/">Open OpsFusion</a>
+  </main>
 </body>
 </html>
