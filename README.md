@@ -1,3 +1,5 @@
+> **Consolidated module:** This project is preserved as source/history, but its public product experience is now part of **[OpsFusion](https://sachibara.github.io/HelpDesk-Pro/)**. The consolidation reduces duplicate portfolio projects and connects this capability to a shared enterprise data/workflow model.
+
 # AD User Provisioning Simulator
 
 A portfolio-grade identity administration and user-lifecycle simulator for IT Help Desk, Systems Administration, IT Operations, and Infrastructure roles.
